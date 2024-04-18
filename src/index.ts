@@ -98,8 +98,8 @@ class SolanaTracker {
 
     async performSwap(swapResponse: SwapResponse, options = {
         sendOptions: { skipPreflight: true },
-        confirmationRetries: 5,
-        confirmationRetryTimeout: 500,
+        confirmationRetries: 30,
+        confirmationRetryTimeout: 1000,
         lastValidBlockHeightBuffer: 150,
         resendInterval: 1000,
         confirmationCheckInterval: 1000,
