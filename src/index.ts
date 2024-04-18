@@ -96,7 +96,14 @@ class SolanaTracker {
         }
     }
 
-    async performSwap(swapResponse: SwapResponse): Promise<string> {
+    async performSwap(swapResponse: SwapResponse, options = {
+        sendOptions: { skipPreflight: true },
+        confirmationRetries: 5,
+        confirmationRetryTimeout: 500,
+        lastValidBlockHeightBuffer: 150,
+        resendInterval: 1000,
+        confirmationCheckInterval: 1000,
+    }): Promise<string> {
         const serializedTransactionBuffer = Buffer.from(swapResponse.txn, 'base64');
         let txn: VersionedTransaction | Transaction;
 
@@ -119,6 +126,7 @@ class SolanaTracker {
             connection: this.connection,
             serializedTransaction: txn.serialize() as Buffer,
             blockhashWithExpiryBlockHeight,
+            options: options
         });
 
         return response ? response.transaction.signatures[0] : null;

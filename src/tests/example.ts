@@ -5,7 +5,7 @@ import SolanaTracker from "../";
 async function swap() {
   const keypair = Keypair.fromSecretKey(
     bs58.decode(
-      "YOUR_SECRET_KEY_HERE"
+      "YOUR_SECRET_KEY"
     )
   );
   const solanaTracker = new SolanaTracker(
@@ -19,7 +19,7 @@ async function swap() {
     0.0005, // Amount to swap
     30, // Slippage
     keypair.publicKey.toBase58(), // Payer public key
-    0.00005 // Priority fee (Recommended while network is congested)
+    0.0005 // Priority fee (Recommended while network is congested)
   ); 
 
   const txid = await solanaTracker.performSwap(swapResponse);

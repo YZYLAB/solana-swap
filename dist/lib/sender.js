@@ -8,8 +8,8 @@ const web3_js_1 = require("@solana/web3.js");
 const promise_retry_1 = __importDefault(require("promise-retry"));
 const DEFAULT_OPTIONS = {
     sendOptions: { skipPreflight: true },
-    confirmationRetries: 5,
-    confirmationRetryTimeout: 500,
+    confirmationRetries: 30,
+    confirmationRetryTimeout: 1000,
     lastValidBlockHeightBuffer: 150,
     resendInterval: 1000,
     confirmationCheckInterval: 1000,

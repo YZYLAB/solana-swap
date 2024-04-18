@@ -50,7 +50,14 @@ class SolanaTracker {
             throw error;
         }
     }
-    async performSwap(swapResponse) {
+    async performSwap(swapResponse, options = {
+        sendOptions: { skipPreflight: true },
+        confirmationRetries: 5,
+        confirmationRetryTimeout: 500,
+        lastValidBlockHeightBuffer: 150,
+        resendInterval: 1000,
+        confirmationCheckInterval: 1000,
+    }) {
         const serializedTransactionBuffer = Buffer.from(swapResponse.txn, 'base64');
         let txn;
         if (swapResponse.isJupiter) {
@@ -70,6 +77,7 @@ class SolanaTracker {
             connection: this.connection,
             serializedTransaction: txn.serialize(),
             blockhashWithExpiryBlockHeight,
+            options: options
         });
         return response ? response.transaction.signatures[0] : null;
     }
