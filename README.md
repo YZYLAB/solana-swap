@@ -12,8 +12,7 @@ Install Solana Swap with NPM
   npm install solana-swap
 ```
 Or 
-```
-bash
+```bash
 git clone https://github.com/YZYLAB/solana-swap.git
 ```
 
