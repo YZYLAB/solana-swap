@@ -1,0 +1,35 @@
+{
+  "name": "solana-swap",
+  "version": "1.0.0",
+  "description": "Solana Swap Library for Solana Tracker Fast Swap API",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsc",
+    "watch:build": "tsc --watch",
+    "watch:server": "nodemon './dist/index.js' --watch './dist'",
+    "start": "npm-run-all build --parallel watch:build watch:server --print-label"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YZYLAB/solana-swap.git"
+  },
+  "keywords": [
+    "solana",
+    "swap",
+    "raydium",
+    "jupiter"
+  ],
+  "author": "Solana Tracker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YZYLAB/solana-swap/issues"
+  },
+  "homepage": "https://github.com/YZYLAB/solana-swap#readme",
+  "dependencies": {
+    "@solana/web3.js": "^1.91.6",
+    "bs58": "^5.0.0",
+    "got": "11.8.2",
+    "promise-retry": "^2.0.1"
+  }
+}
