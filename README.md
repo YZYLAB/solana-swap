@@ -50,7 +50,8 @@ async function swap() {
     0.0005, // Amount to swap
     30, // Slippage
     keypair.publicKey.toBase58(), // Payer public key
-    0.00005 // Priority fee (Recommended while network is congested)
+    0.00005, // Priority fee (Recommended while network is congested)
+    true // Force legacy transaction for Jupiter
   ); 
 
   const txid = await solanaTracker.performSwap(swapResponse);
