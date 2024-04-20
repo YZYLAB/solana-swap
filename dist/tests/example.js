@@ -7,10 +7,10 @@ const web3_js_1 = require("@solana/web3.js");
 const bs58_1 = __importDefault(require("bs58"));
 const __1 = __importDefault(require("../"));
 async function swap() {
-    const keypair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode("zi2ungRtxbHEqHH4CtRrbbPUq4DKMDkScNQ4exCsQEZerucBM2hwMca61hcGfAQy7vzDpdjodMqZn6kuu9vf7wQ"));
+    const keypair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode("YOUR_SECRET_KEY"));
     const solanaTracker = new __1.default(keypair, "https://api.solanatracker.io/rpc");
     const swapResponse = await solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", // From Token
-    "4nJWRhrLR4YbomC6BRMLw5Dikhm56ngoaJ9FF237xvNZ", // To Token
+    "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // To Token
     0.0005, // Amount to swap
     30, // Slippage
     keypair.publicKey.toBase58(), // Payer public key
