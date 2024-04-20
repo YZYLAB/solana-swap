@@ -29,13 +29,14 @@ class SolanaTracker {
             throw error;
         }
     }
-    async getSwapInstructions(from, to, fromAmount, slippage, payer, priorityFee) {
+    async getSwapInstructions(from, to, fromAmount, slippage, payer, priorityFee, forceLegacy) {
         const params = new URLSearchParams({
             from,
             to,
             fromAmount: fromAmount.toString(),
             slippage: slippage.toString(),
             payer,
+            forceLegacy: forceLegacy ? "true" : "false",
         });
         if (priorityFee) {
             params.append("priorityFee", priorityFee.toString());

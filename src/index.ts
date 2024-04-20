@@ -71,7 +71,8 @@ class SolanaTracker {
         fromAmount: number,
         slippage: number,
         payer: string,
-        priorityFee?: number
+        priorityFee?: number,
+        forceLegacy?: boolean
     ): Promise<SwapResponse> {
         const params = new URLSearchParams({
             from,
@@ -79,6 +80,7 @@ class SolanaTracker {
             fromAmount: fromAmount.toString(),
             slippage: slippage.toString(),
             payer,
+            forceLegacy: forceLegacy ? "true" : "false",
         });
 
         if (priorityFee) {

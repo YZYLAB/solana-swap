@@ -19,10 +19,18 @@ async function swap() {
     0.0005, // Amount to swap
     30, // Slippage
     keypair.publicKey.toBase58(), // Payer public key
-    0.0005 // Priority fee (Recommended while network is congested)
+    0.0005, // Priority fee (Recommended while network is congested)
+    true // Force legacy transaction for Jupiter
   ); 
 
-  const txid = await solanaTracker.performSwap(swapResponse);
+  const txid = await solanaTracker.performSwap(swapResponse, {
+    sendOptions: { skipPreflight: true },
+    confirmationRetries: 30,
+    confirmationRetryTimeout: 1000,
+    lastValidBlockHeightBuffer: 150,
+    resendInterval: 1000,
+    confirmationCheckInterval: 1000,
+});
   // Returns txid when the swap is successful or throws an error if the swap fails
   console.log("Transaction ID:", txid);
   console.log("Transaction URL:", `https://explorer.solana.com/tx/${txid}`);
