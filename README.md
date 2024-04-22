@@ -63,6 +63,10 @@ async function swap() {
 swap();
 ```
 
+ES5 Example Import
+```javascript
+const SolanaTracker = require("solana-swap").default;
+```
 
 
 ## FAQ

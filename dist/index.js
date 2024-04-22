@@ -57,7 +57,7 @@ class SolanaTracker {
         confirmationRetryTimeout: 1000,
         lastValidBlockHeightBuffer: 150,
         resendInterval: 1000,
-        confirmationCheckInterval: 1000,
+        confirmationCheckInterval: 1000
     }) {
         const serializedTransactionBuffer = Buffer.from(swapResponse.txn, 'base64');
         let txn;
@@ -74,13 +74,13 @@ class SolanaTracker {
             blockhash: blockhash.blockhash,
             lastValidBlockHeight: blockhash.lastValidBlockHeight,
         };
-        const response = await (0, sender_1.transactionSenderAndConfirmationWaiter)({
+        const txid = await (0, sender_1.transactionSenderAndConfirmationWaiter)({
             connection: this.connection,
             serializedTransaction: txn.serialize(),
             blockhashWithExpiryBlockHeight,
             options: options
         });
-        return response ? response.transaction.signatures[0] : null;
+        return txid.toString();
     }
 }
 exports.default = SolanaTracker;
