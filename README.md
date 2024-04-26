@@ -4,6 +4,11 @@
 Easiest way to add Solana based swaps to your project.
 Uses the Solana Swap api from [https://docs.solanatracker.io](https://docs.solanatracker.io)
 
+## Now supporting
+- Raydium
+- Pump.fun
+- Jupiter
+
 ## Installation
 
 Install Solana Swap with NPM
