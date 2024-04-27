@@ -34,6 +34,7 @@ interface SwapResponse {
   txn: string;
   isJupiter: boolean;
   rate: RateResponse;
+  forceLegacy?: boolean;
 }
 
 class SolanaTracker {
@@ -91,6 +92,7 @@ class SolanaTracker {
     const url = `${this.baseUrl}/swap?${params}`;
     try {
       const response = await axios.get(url);
+      response.data.forceLegacy = forceLegacy;
       return response.data as SwapResponse;
     } catch (error) {
       console.error("Error fetching swap instructions:", error);
@@ -111,7 +113,7 @@ class SolanaTracker {
   ): Promise<string> {
     const serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
     let txn: VersionedTransaction | Transaction;
-    if (swapResponse.isJupiter) {
+    if (swapResponse.isJupiter && !swapResponse.forceLegacy) {
       txn = VersionedTransaction.deserialize(serializedTransactionBuffer);
       txn.sign([this.keypair]);
     } else {

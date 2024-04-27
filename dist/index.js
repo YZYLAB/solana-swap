@@ -44,6 +44,7 @@ class SolanaTracker {
         const url = `${this.baseUrl}/swap?${params}`;
         try {
             const response = await axios_1.default.get(url);
+            response.data.forceLegacy = forceLegacy;
             return response.data;
         }
         catch (error) {
@@ -61,7 +62,7 @@ class SolanaTracker {
     }) {
         const serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
         let txn;
-        if (swapResponse.isJupiter) {
+        if (swapResponse.isJupiter && !swapResponse.forceLegacy) {
             txn = web3_js_1.VersionedTransaction.deserialize(serializedTransactionBuffer);
             txn.sign([this.keypair]);
         }
