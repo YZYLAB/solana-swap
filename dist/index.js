@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const got_1 = __importDefault(require("got"));
+const axios_1 = __importDefault(require("axios"));
 const web3_js_1 = require("@solana/web3.js");
 const sender_1 = require("./lib/sender");
 class SolanaTracker {
@@ -21,8 +21,8 @@ class SolanaTracker {
         });
         const url = `${this.baseUrl}/rate?${params}`;
         try {
-            const response = await (0, got_1.default)(url, { responseType: "json" });
-            return response.body;
+            const response = await axios_1.default.get(url);
+            return response.data;
         }
         catch (error) {
             console.error("Error fetching rate:", error);
@@ -43,8 +43,8 @@ class SolanaTracker {
         }
         const url = `${this.baseUrl}/swap?${params}`;
         try {
-            const response = await (0, got_1.default)(url, { responseType: "json" });
-            return response.body;
+            const response = await axios_1.default.get(url);
+            return response.data;
         }
         catch (error) {
             console.error("Error fetching swap instructions:", error);
@@ -57,9 +57,9 @@ class SolanaTracker {
         confirmationRetryTimeout: 1000,
         lastValidBlockHeightBuffer: 150,
         resendInterval: 1000,
-        confirmationCheckInterval: 1000
+        confirmationCheckInterval: 1000,
     }) {
-        const serializedTransactionBuffer = Buffer.from(swapResponse.txn, 'base64');
+        const serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
         let txn;
         if (swapResponse.isJupiter) {
             txn = web3_js_1.VersionedTransaction.deserialize(serializedTransactionBuffer);
@@ -78,7 +78,7 @@ class SolanaTracker {
             connection: this.connection,
             serializedTransaction: txn.serialize(),
             blockhashWithExpiryBlockHeight,
-            options: options
+            options: options,
         });
         return txid.toString();
     }

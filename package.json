@@ -28,8 +28,8 @@
   "homepage": "https://github.com/YZYLAB/solana-swap#readme",
   "dependencies": {
     "@solana/web3.js": "^1.91.6",
+    "axios": "^1.6.8",
     "bs58": "^5.0.0",
-    "got": "11.8.2",
     "promise-retry": "^2.0.1"
   }
 }

@@ -9,7 +9,7 @@ async function swap() {
     )
   );
   const solanaTracker = new SolanaTracker(
-    keypair, 
+    keypair,
     "https://api.solanatracker.io/rpc"
   );
 
@@ -21,7 +21,7 @@ async function swap() {
     keypair.publicKey.toBase58(), // Payer public key
     0.0005, // Priority fee (Recommended while network is congested)
     true // Force legacy transaction for Jupiter
-  ); 
+  );
 
   const txid = await solanaTracker.performSwap(swapResponse, {
     sendOptions: { skipPreflight: true },
@@ -30,7 +30,7 @@ async function swap() {
     lastValidBlockHeightBuffer: 150,
     resendInterval: 1000,
     confirmationCheckInterval: 1000,
-});
+  });
   // Returns txid when the swap is successful or throws an error if the swap fails
   console.log("Transaction ID:", txid);
   console.log("Transaction URL:", `https://explorer.solana.com/tx/${txid}`);
