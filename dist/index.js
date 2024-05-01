@@ -59,6 +59,7 @@ class SolanaTracker {
         lastValidBlockHeightBuffer: 150,
         resendInterval: 1000,
         confirmationCheckInterval: 1000,
+        skipConfirmationCheck: false,
     }) {
         const serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
         let txn;

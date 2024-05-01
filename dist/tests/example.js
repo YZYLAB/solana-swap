@@ -24,6 +24,7 @@ async function swap() {
         lastValidBlockHeightBuffer: 150,
         resendInterval: 1000,
         confirmationCheckInterval: 1000,
+        skipConfirmationCheck: false // Set to true if you want to skip confirmation checks and return txid immediately
     });
     // Returns txid when the swap is successful or throws an error if the swap fails
     console.log("Transaction ID:", txid);

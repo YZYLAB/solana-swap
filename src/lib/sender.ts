@@ -16,6 +16,7 @@ import {
     lastValidBlockHeightBuffer?: number;
     resendInterval?: number;
     confirmationCheckInterval?: number;
+    skipConfirmationCheck?: boolean;
   }
   
   const DEFAULT_OPTIONS: TransactionSenderAndConfirmationWaiterOptions = {
@@ -25,6 +26,7 @@ import {
     lastValidBlockHeightBuffer: 150,
     resendInterval: 1000,
     confirmationCheckInterval: 1000,
+    skipConfirmationCheck: false
   };
   
   async function transactionSenderAndConfirmationWaiter({
@@ -45,6 +47,7 @@ import {
       lastValidBlockHeightBuffer,
       resendInterval,
       confirmationCheckInterval,
+      skipConfirmationCheck
     } = { ...DEFAULT_OPTIONS, ...options };
   
     const lastValidBlockHeight =
@@ -59,6 +62,10 @@ import {
           serializedTransaction,
           sendOptions
         );
+
+        if (skipConfirmationCheck) {
+          return signature;
+        }
   
         while (true) {
           const status = await connection.getSignatureStatus(signature);

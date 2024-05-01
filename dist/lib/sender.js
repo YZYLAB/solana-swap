@@ -8,15 +8,19 @@ const DEFAULT_OPTIONS = {
     lastValidBlockHeightBuffer: 150,
     resendInterval: 1000,
     confirmationCheckInterval: 1000,
+    skipConfirmationCheck: false
 };
 async function transactionSenderAndConfirmationWaiter({ connection, serializedTransaction, blockhashWithExpiryBlockHeight, options = {}, }) {
-    const { sendOptions, confirmationRetries, confirmationRetryTimeout, lastValidBlockHeightBuffer, resendInterval, confirmationCheckInterval, } = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
+    const { sendOptions, confirmationRetries, confirmationRetryTimeout, lastValidBlockHeightBuffer, resendInterval, confirmationCheckInterval, skipConfirmationCheck } = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
     const lastValidBlockHeight = blockhashWithExpiryBlockHeight.lastValidBlockHeight -
         lastValidBlockHeightBuffer;
     let retryCount = 0;
     while (retryCount <= confirmationRetries) {
         try {
             const signature = await connection.sendRawTransaction(serializedTransaction, sendOptions);
+            if (skipConfirmationCheck) {
+                return signature;
+            }
             while (true) {
                 const status = await connection.getSignatureStatus(signature);
                 if (status.value && status.value.confirmationStatus === "finalized") {
