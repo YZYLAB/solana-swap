@@ -8,7 +8,7 @@ const bs58_1 = __importDefault(require("bs58"));
 const __1 = __importDefault(require("../"));
 async function swap() {
     const keypair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode("YOUR_SECRET_KEY"));
-    const solanaTracker = new __1.default(keypair, "https://api.solanatracker.io/rpc");
+    const solanaTracker = new __1.default(keypair, "https://rpc.solanatracker.io/public?advancedTx=true");
     const swapResponse = await solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", // From Token
     "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // To Token
     0.0005, // Amount to swap

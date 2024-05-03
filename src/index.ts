@@ -38,7 +38,7 @@ interface SwapResponse {
 }
 
 class SolanaTracker {
-  private readonly baseUrl = "https://api.solanatracker.io";
+  private readonly baseUrl = "https://swap-api.solanatracker.io";
   private readonly connection: Connection;
   private readonly keypair: Keypair;
 

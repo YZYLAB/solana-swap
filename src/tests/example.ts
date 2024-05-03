@@ -10,7 +10,7 @@ async function swap() {
   );
   const solanaTracker = new SolanaTracker(
     keypair,
-    "https://api.solanatracker.io/rpc"
+    "https://rpc.solanatracker.io/public?advancedTx=true"
   );
 
   const swapResponse = await solanaTracker.getSwapInstructions(

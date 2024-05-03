@@ -41,7 +41,7 @@ async function swap() {
   const keypair = Keypair.fromSecretKey(bs58.decode("YOUR_SECRET_KEY_HERE"));
   const solanaTracker = new SolanaTracker(
     keypair,
-    "https://api.solanatracker.io/rpc" // YOUR RPC URL
+    "https://rpc.solanatracker.io/public?advancedTx=true" // YOUR RPC URL
   );
 
   const swapResponse = await solanaTracker.getSwapInstructions(

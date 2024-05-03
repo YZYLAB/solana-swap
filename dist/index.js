@@ -8,7 +8,7 @@ const web3_js_1 = require("@solana/web3.js");
 const sender_1 = require("./lib/sender");
 class SolanaTracker {
     constructor(keypair, rpc) {
-        this.baseUrl = "https://api.solanatracker.io";
+        this.baseUrl = "https://swap-api.solanatracker.io";
         this.connection = new web3_js_1.Connection(rpc);
         this.keypair = keypair;
     }
