@@ -61,7 +61,19 @@ class SolanaTracker {
         confirmationCheckInterval: 1000,
         skipConfirmationCheck: false,
     }) {
-        const serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
+        let serializedTransactionBuffer;
+        if (Buffer) {
+            serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
+        }
+        else {
+            const base64Str = swapResponse.txn;
+            const binaryStr = atob(base64Str);
+            const buffer = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) {
+                buffer[i] = binaryStr.charCodeAt(i);
+            }
+            serializedTransactionBuffer = buffer;
+        }
         let txn;
         if (swapResponse.isJupiter && !swapResponse.forceLegacy) {
             txn = web3_js_1.VersionedTransaction.deserialize(serializedTransactionBuffer);
