@@ -62,10 +62,10 @@ class SolanaTracker {
         skipConfirmationCheck: false,
     }) {
         let serializedTransactionBuffer;
-        if (Buffer) {
+        try {
             serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
         }
-        else {
+        catch (error) {
             const base64Str = swapResponse.txn;
             const binaryStr = atob(base64Str);
             const buffer = new Uint8Array(binaryStr.length);
