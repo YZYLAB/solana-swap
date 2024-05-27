@@ -17,6 +17,7 @@ import {
     resendInterval?: number;
     confirmationCheckInterval?: number;
     skipConfirmationCheck?: boolean;
+    commitment?: "confirmed" | "finalized" | "processed";
   }
   
   const DEFAULT_OPTIONS: TransactionSenderAndConfirmationWaiterOptions = {
@@ -26,14 +27,15 @@ import {
     lastValidBlockHeightBuffer: 150,
     resendInterval: 1000,
     confirmationCheckInterval: 1000,
-    skipConfirmationCheck: false
+    skipConfirmationCheck: false,
+    commitment: "confirmed",
   };
   
   async function transactionSenderAndConfirmationWaiter({
     connection,
     serializedTransaction,
     blockhashWithExpiryBlockHeight,
-    options = {},
+    options = DEFAULT_OPTIONS,
   }: {
     connection: Connection;
     serializedTransaction: Buffer;
@@ -47,16 +49,17 @@ import {
       lastValidBlockHeightBuffer,
       resendInterval,
       confirmationCheckInterval,
-      skipConfirmationCheck
+      skipConfirmationCheck,
+      commitment
     } = { ...DEFAULT_OPTIONS, ...options };
   
     const lastValidBlockHeight =
       blockhashWithExpiryBlockHeight.lastValidBlockHeight -
-      lastValidBlockHeightBuffer;
+      (lastValidBlockHeightBuffer || 150);
   
     let retryCount = 0;
   
-    while (retryCount <= confirmationRetries) {
+    while (retryCount <= (confirmationRetries || 30)) {
       try {
         const signature = await connection.sendRawTransaction(
           serializedTransaction,
@@ -70,7 +73,7 @@ import {
         while (true) {
           const status = await connection.getSignatureStatus(signature);
   
-          if (status.value && status.value.confirmationStatus === "finalized") {
+          if (status.value && status.value.confirmationStatus === commitment) {
             return signature;
           }
   
@@ -82,7 +85,7 @@ import {
             setTimeout(resolve, confirmationCheckInterval)
           );
         }
-      } catch (error) {
+      } catch (error: any) {
         if (
           retryCount === confirmationRetries ||
           error.message.includes("Transaction expired")

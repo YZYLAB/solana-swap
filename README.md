@@ -35,7 +35,7 @@ _Add your site here_
 ```javascript
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
-import SolanaTracker from "solana-swap";
+import { SolanaTracker } from "solana-swap";
 
 async function swap() {
   const keypair = Keypair.fromSecretKey(bs58.decode("YOUR_SECRET_KEY_HERE"));
@@ -62,10 +62,11 @@ async function swap() {
     resendInterval: 1000,
     confirmationCheckInterval: 1000,
     skipConfirmationCheck: false, // Set to true if you want to skip confirmation checks and return txid immediately
+    commitment: "confirmed"
   });
   // Returns txid when the swap is successful or throws an error if the swap fails
   console.log("Transaction ID:", txid);
-  console.log("Transaction URL:", `https://explorer.solana.com/tx/${txid}`);
+  console.log("Transaction URL:", `https://solscan.io/tx/${txid}`);
 }
 
 swap();
@@ -74,7 +75,7 @@ swap();
 ES5 Example Import
 
 ```javascript
-const SolanaTracker = require("solana-swap").default;
+const { SolanaTracker } = require("solana-swap")
 ```
 
 ## FAQ
@@ -89,4 +90,4 @@ We also provide our own hosted Jupiter Swap API with no rate limits and faster m
 We charge a 0.9% fee on each successful transaction
 .
 Using this for a public bot or site with a high processing volume?
-Contact us via Discord or email (solanatracker@yzylab.com) and get the fee reduced to 0.1% (only if accepted.)
+Contact us via Discord or email (swap-api@solanatracker.io) and get the fee reduced to 0.1% (only if accepted.)

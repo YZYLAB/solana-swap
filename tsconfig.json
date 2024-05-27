@@ -1,11 +1,17 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "target": "ES2017",
-    "esModuleInterop": true,
-    "moduleResolution": "Node16",
-    "module": "Node16"
+    "target": "es2015",
+    "moduleResolution": "node",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

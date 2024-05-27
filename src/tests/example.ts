@@ -1,6 +1,6 @@
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
-import SolanaTracker from "../";
+import { SolanaTracker } from "../";
 
 async function swap() {
   const keypair = Keypair.fromSecretKey(

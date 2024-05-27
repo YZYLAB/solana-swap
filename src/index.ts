@@ -7,37 +7,9 @@ import {
   BlockhashWithExpiryBlockHeight,
 } from "@solana/web3.js";
 import { transactionSenderAndConfirmationWaiter } from "./lib/sender";
+import { RateResponse, SwapResponse } from "./types";
 
-interface RateResponse {
-  amountIn: number;
-  amountOut: number;
-  minAmountOut: number;
-  currentPrice: number;
-  executionPrice: number;
-  priceImpact: number;
-  fee: number;
-  baseCurrency: {
-    decimals: number;
-    mint: string;
-  };
-  quoteCurrency: {
-    decimals: number;
-    mint: string;
-  };
-  platformFee: number;
-  platformFeeUI: number;
-  isJupiter: boolean;
-  rawQuoteResponse: any;
-}
-
-interface SwapResponse {
-  txn: string;
-  isJupiter: boolean;
-  rate: RateResponse;
-  forceLegacy?: boolean;
-}
-
-class SolanaTracker {
+export class SolanaTracker {
   private readonly baseUrl = "https://swap-api.solanatracker.io";
   private readonly connection: Connection;
   private readonly keypair: Keypair;
@@ -147,5 +119,3 @@ class SolanaTracker {
     return txid.toString();
   }
 }
-
-export default SolanaTracker;
