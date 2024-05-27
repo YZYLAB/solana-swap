@@ -1,6 +1,6 @@
 {
   "name": "solana-swap",
-  "version": "1.0.12",
+  "version": "1.0.14",
   "description": "Solana Swap Library for Solana Tracker Fast Swap API",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -15,8 +15,8 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
-    "build:esm": "tsc --module es2015 --outDir dist/esm",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs && cp package.cjs.json dist/cjs/package.json",
+    "build:esm": "tsc --module es2015 --outDir dist/esm && cp package.esm.json dist/esm/package.json",
     "build:umd": "tsc --module umd --outDir dist/umd",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist/types",
     "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:types",

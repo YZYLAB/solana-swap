@@ -9,7 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import axios from "axios";
 import { Connection, Transaction, VersionedTransaction, } from "@solana/web3.js";
-import { transactionSenderAndConfirmationWaiter } from "./lib/sender";
+import { transactionSenderAndConfirmationWaiter } from "./lib/sender.js";
+
 export class SolanaTracker {
     constructor(keypair, rpc) {
         this.baseUrl = "https://swap-api.solanatracker.io";
