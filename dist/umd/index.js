@@ -81,6 +81,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 confirmationRetries: 30,
                 confirmationRetryTimeout: 1000,
                 lastValidBlockHeightBuffer: 150,
+                commitment: "confirmed",
                 resendInterval: 1000,
                 confirmationCheckInterval: 1000,
                 skipConfirmationCheck: false,

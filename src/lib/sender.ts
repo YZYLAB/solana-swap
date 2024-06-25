@@ -9,7 +9,7 @@ import {
     lastValidBlockHeight: number;
   }
   
-  interface TransactionSenderAndConfirmationWaiterOptions {
+  export interface TransactionSenderAndConfirmationWaiterOptions {
     sendOptions?: SendOptions;
     confirmationRetries?: number;
     confirmationRetryTimeout?: number;

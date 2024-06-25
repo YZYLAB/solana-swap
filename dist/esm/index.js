@@ -67,6 +67,7 @@ export class SolanaTracker {
             confirmationRetries: 30,
             confirmationRetryTimeout: 1000,
             lastValidBlockHeightBuffer: 150,
+            commitment: "confirmed",
             resendInterval: 1000,
             confirmationCheckInterval: 1000,
             skipConfirmationCheck: false,

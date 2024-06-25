@@ -6,7 +6,7 @@ import {
   VersionedTransaction,
   BlockhashWithExpiryBlockHeight,
 } from "@solana/web3.js";
-import { transactionSenderAndConfirmationWaiter } from "./lib/sender";
+import { transactionSenderAndConfirmationWaiter, TransactionSenderAndConfirmationWaiterOptions } from "./lib/sender";
 import { RateResponse, SwapResponse } from "./types";
 
 export class SolanaTracker {
@@ -74,11 +74,12 @@ export class SolanaTracker {
 
   async performSwap(
     swapResponse: SwapResponse,
-    options = {
+    options: TransactionSenderAndConfirmationWaiterOptions = {
       sendOptions: { skipPreflight: true },
       confirmationRetries: 30,
       confirmationRetryTimeout: 1000,
       lastValidBlockHeightBuffer: 150,
+      commitment: "confirmed",
       resendInterval: 1000,
       confirmationCheckInterval: 1000,
       skipConfirmationCheck: false,

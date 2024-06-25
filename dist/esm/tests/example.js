@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
-import { SolanaTracker } from "../";
+import { SolanaTracker } from "../index.js";
 function swap() {
     return __awaiter(this, void 0, void 0, function* () {
         const keypair = Keypair.fromSecretKey(bs58.decode("YOUR_SECRET_KEY"));
@@ -29,6 +29,7 @@ function swap() {
             lastValidBlockHeightBuffer: 150,
             resendInterval: 1000,
             confirmationCheckInterval: 1000,
+            commitment: "confirmed",
             skipConfirmationCheck: false // Set to true if you want to skip confirmation checks and return txid immediately
         });
         // Returns txid when the swap is successful or throws an error if the swap fails
