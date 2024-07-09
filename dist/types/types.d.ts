@@ -16,12 +16,11 @@ export interface RateResponse {
     };
     platformFee: number;
     platformFeeUI: number;
-    isJupiter: boolean;
     rawQuoteResponse: any;
 }
 export interface SwapResponse {
     txn: string;
-    isJupiter: boolean;
+    txVersion: string;
     rate: RateResponse;
     forceLegacy?: boolean;
 }

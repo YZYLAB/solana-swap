@@ -10,13 +10,17 @@ import { transactionSenderAndConfirmationWaiter, TransactionSenderAndConfirmatio
 import { RateResponse, SwapResponse } from "./types";
 
 export class SolanaTracker {
-  private readonly baseUrl = "https://swap-api.solanatracker.io";
+  private baseUrl = "https://swap-v2.solanatracker.io";
   private readonly connection: Connection;
   private readonly keypair: Keypair;
 
   constructor(keypair: Keypair, rpc: string) {
     this.connection = new Connection(rpc);
     this.keypair = keypair;
+  }
+
+  async setBaseUrl(url: string) {
+    this.baseUrl = url;
   }
 
   async getRate(
@@ -99,7 +103,7 @@ export class SolanaTracker {
       serializedTransactionBuffer = buffer;
     }
     let txn: VersionedTransaction | Transaction;
-    if (swapResponse.isJupiter && !swapResponse.forceLegacy) {
+    if (swapResponse.txVersion === 'v0') {
       txn = VersionedTransaction.deserialize(serializedTransactionBuffer);
       txn.sign([this.keypair]);
     } else {

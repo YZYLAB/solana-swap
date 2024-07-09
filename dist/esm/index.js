@@ -10,12 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import axios from "axios";
 import { Connection, Transaction, VersionedTransaction, } from "@solana/web3.js";
 import { transactionSenderAndConfirmationWaiter } from "./lib/sender.js";
-
 export class SolanaTracker {
     constructor(keypair, rpc) {
-        this.baseUrl = "https://swap-api.solanatracker.io";
+        this.baseUrl = "https://swap-v2.solanatracker.io";
         this.connection = new Connection(rpc);
         this.keypair = keypair;
+    }
+    setBaseUrl(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.baseUrl = url;
+        });
     }
     getRate(from, to, amount, slippage) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -86,7 +90,7 @@ export class SolanaTracker {
                 serializedTransactionBuffer = buffer;
             }
             let txn;
-            if (swapResponse.isJupiter && !swapResponse.forceLegacy) {
+            if (swapResponse.txVersion === 'v0') {
                 txn = VersionedTransaction.deserialize(serializedTransactionBuffer);
                 txn.sign([this.keypair]);
             }

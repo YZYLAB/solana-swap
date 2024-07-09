@@ -27,9 +27,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const sender_1 = require("./lib/sender");
     class SolanaTracker {
         constructor(keypair, rpc) {
-            this.baseUrl = "https://swap-api.solanatracker.io";
+            this.baseUrl = "https://swap-v2.solanatracker.io";
             this.connection = new web3_js_1.Connection(rpc);
             this.keypair = keypair;
+        }
+        setBaseUrl(url) {
+            return __awaiter(this, void 0, void 0, function* () {
+                this.baseUrl = url;
+            });
         }
         getRate(from, to, amount, slippage) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -100,7 +105,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     serializedTransactionBuffer = buffer;
                 }
                 let txn;
-                if (swapResponse.isJupiter && !swapResponse.forceLegacy) {
+                if (swapResponse.txVersion === 'v0') {
                     txn = web3_js_1.VersionedTransaction.deserialize(serializedTransactionBuffer);
                     txn.sign([this.keypair]);
                 }
