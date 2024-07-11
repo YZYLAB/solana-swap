@@ -41,7 +41,6 @@ class SolanaTracker {
                 return response.data;
             }
             catch (error) {
-                console.error("Error fetching rate:", error);
                 throw error;
             }
         });
@@ -66,7 +65,6 @@ class SolanaTracker {
                 return response.data;
             }
             catch (error) {
-                console.error("Error fetching swap instructions:", error);
                 throw error;
             }
         });

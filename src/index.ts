@@ -40,7 +40,6 @@ export class SolanaTracker {
       const response = await axios.get(url);
       return response.data as RateResponse;
     } catch (error) {
-      console.error("Error fetching rate:", error);
       throw error;
     }
   }
@@ -71,7 +70,6 @@ export class SolanaTracker {
       response.data.forceLegacy = forceLegacy;
       return response.data as SwapResponse;
     } catch (error) {
-      console.error("Error fetching swap instructions:", error);
       throw error;
     }
   }

@@ -50,7 +50,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return response.data;
                 }
                 catch (error) {
-                    console.error("Error fetching rate:", error);
                     throw error;
                 }
             });
@@ -75,7 +74,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     return response.data;
                 }
                 catch (error) {
-                    console.error("Error fetching swap instructions:", error);
                     throw error;
                 }
             });
