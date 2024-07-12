@@ -15,6 +15,10 @@ export interface TransactionSenderAndConfirmationWaiterOptions {
     confirmationCheckInterval?: number;
     skipConfirmationCheck?: boolean;
     commitment?: SupportedCommitment;
+    jito?: {
+        enabled: boolean;
+        tip: number;
+    };
 }
 declare function transactionSenderAndConfirmationWaiter({ connection, serializedTransaction, blockhashWithExpiryBlockHeight, options, }: {
     connection: Connection;

@@ -3,6 +3,9 @@
 Easiest way to add Solana based swaps to your project.
 Uses the Solana Swap api from [https://docs.solanatracker.io](https://docs.solanatracker.io)
 
+## Update July 12
+You can now use "auto" on amount to automatically set the amount to the Balance of that token in the wallet. Only for Swap not for Rate endpoints!  Jito has been added to the library with example below. 
+
 ## UPDATE - July 9: Swap API has been updated, way faster and supporting new markets!
 
 ## Now supporting
@@ -44,7 +47,7 @@ import { SolanaTracker } from "../";
 async function swap() {
   const keypair = Keypair.fromSecretKey(
     bs58.decode(
-      "YOUR_SECRET_KEY"
+      "YOUR_SECRET_KEY_HERE"
     )
   );
   const solanaTracker = new SolanaTracker(
@@ -55,12 +58,13 @@ async function swap() {
   const swapResponse = await solanaTracker.getSwapInstructions(
     "So11111111111111111111111111111111111111112", // From Token
     "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // To Token
-    0.0005, // Amount to swap
+    0.0001, // Amount to swap
     30, // Slippage
     keypair.publicKey.toBase58(), // Payer public key
     0.0005, // Priority fee (Recommended while network is congested)
   );
 
+  // Regular transaction
   try {
     const txid = await solanaTracker.performSwap(swapResponse, {
       sendOptions: { skipPreflight: true },
@@ -75,7 +79,27 @@ async function swap() {
     // Returns txid when the swap is successful or throws an error if the swap fails
     console.log("Transaction ID:", txid);
     console.log("Transaction URL:", `https://solscan.io/tx/${txid}`);
-  } catch (error) {
+  } catch (error: any) {
+    const {signature, message} = error;
+    console.error("Error performing swap:", message, signature);
+  }
+
+  // Jito transaction
+  try {
+    const txid = await solanaTracker.performSwap(swapResponse, {
+      sendOptions: { skipPreflight: true },
+      confirmationRetries: 30,
+      confirmationCheckInterval: 500,
+      commitment: "processed",
+      jito: {
+        enabled: true,
+        tip: 0.0001,
+      },
+    });
+    // Returns txid when the swap is successful or throws an error if the swap fails
+    console.log("Transaction ID:", txid);
+    console.log("Transaction URL:", `https://solscan.io/tx/${txid}`);
+  } catch (error: any) {
     const {signature, message} = error;
     console.error("Error performing swap:", message, signature);
   }

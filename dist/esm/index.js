@@ -8,8 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import axios from "axios";
+import bs58 from "bs58";
 import { Connection, Transaction, VersionedTransaction, } from "@solana/web3.js";
 import { transactionSenderAndConfirmationWaiter } from "./lib/sender.js";
+import { sendBundle, createTipTransaction, checkBundleStatus } from "./lib/jito.js";
 export class SolanaTracker {
     constructor(keypair, rpc) {
         this.baseUrl = "https://swap-v2.solanatracker.io";
@@ -55,7 +57,6 @@ export class SolanaTracker {
             const url = `${this.baseUrl}/swap?${params}`;
             try {
                 const response = yield axios.get(url);
-                response.data.forceLegacy = forceLegacy;
                 return response.data;
             }
             catch (error) {
@@ -69,11 +70,16 @@ export class SolanaTracker {
             confirmationRetries: 30,
             confirmationRetryTimeout: 1000,
             lastValidBlockHeightBuffer: 150,
-            commitment: "confirmed",
+            commitment: "processed",
             resendInterval: 1000,
             confirmationCheckInterval: 1000,
             skipConfirmationCheck: false,
+            jito: {
+                enabled: false,
+                tip: 0
+            }
         }) {
+            var _a;
             let serializedTransactionBuffer;
             try {
                 serializedTransactionBuffer = Buffer.from(swapResponse.txn, "base64");
@@ -88,6 +94,11 @@ export class SolanaTracker {
                 serializedTransactionBuffer = buffer;
             }
             let txn;
+            const blockhash = yield this.connection.getLatestBlockhash();
+            const blockhashWithExpiryBlockHeight = {
+                blockhash: blockhash.blockhash,
+                lastValidBlockHeight: blockhash.lastValidBlockHeight,
+            };
             if (swapResponse.txVersion === 'v0') {
                 txn = VersionedTransaction.deserialize(serializedTransactionBuffer);
                 txn.sign([this.keypair]);
@@ -96,11 +107,17 @@ export class SolanaTracker {
                 txn = Transaction.from(serializedTransactionBuffer);
                 txn.sign(this.keypair);
             }
-            const blockhash = yield this.connection.getLatestBlockhash();
-            const blockhashWithExpiryBlockHeight = {
-                blockhash: blockhash.blockhash,
-                lastValidBlockHeight: blockhash.lastValidBlockHeight,
-            };
+            if ((_a = options.jito) === null || _a === void 0 ? void 0 : _a.enabled) {
+                // Create a tip transaction for the Jito block engine
+                const tipTxn = yield createTipTransaction(this.keypair.publicKey.toBase58(), options.jito.tip);
+                tipTxn.recentBlockhash = blockhash.blockhash;
+                tipTxn.sign(this.keypair);
+                const response = yield sendBundle([bs58.encode(txn.serialize()), bs58.encode(tipTxn.serialize())]);
+                if (response.result) {
+                    const txid = yield checkBundleStatus(response.result, options.confirmationRetries, options.commitment, options.confirmationCheckInterval);
+                    return txid;
+                }
+            }
             const txid = yield transactionSenderAndConfirmationWaiter({
                 connection: this.connection,
                 serializedTransaction: txn.serialize(),

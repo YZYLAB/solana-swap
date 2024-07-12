@@ -32,7 +32,11 @@ const DEFAULT_OPTIONS = {
     resendInterval: 1000,
     confirmationCheckInterval: 1000,
     skipConfirmationCheck: false,
-    commitment: "confirmed",
+    commitment: "processed",
+    jito: {
+        enabled: false,
+        tip: 0,
+    }
 };
 function transactionSenderAndConfirmationWaiter(_a) {
     return __awaiter(this, arguments, void 0, function* ({ connection, serializedTransaction, blockhashWithExpiryBlockHeight, options = DEFAULT_OPTIONS, }) {

@@ -1,6 +1,6 @@
 {
   "name": "solana-swap",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Solana Swap Library for Solana Tracker Fast Swap API",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

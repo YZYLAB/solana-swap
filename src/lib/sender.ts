@@ -42,6 +42,10 @@ export interface TransactionSenderAndConfirmationWaiterOptions {
   confirmationCheckInterval?: number;
   skipConfirmationCheck?: boolean;
   commitment?: SupportedCommitment;
+  jito?: {
+    enabled: boolean;
+    tip: number;
+  };
 }
 
 const DEFAULT_OPTIONS: TransactionSenderAndConfirmationWaiterOptions = {
@@ -52,7 +56,11 @@ const DEFAULT_OPTIONS: TransactionSenderAndConfirmationWaiterOptions = {
   resendInterval: 1000,
   confirmationCheckInterval: 1000,
   skipConfirmationCheck: false,
-  commitment: "confirmed",
+  commitment: "processed",
+  jito: {
+    enabled: false,
+    tip: 0,
+}
 };
 
 async function transactionSenderAndConfirmationWaiter({
