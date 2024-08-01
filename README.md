@@ -16,6 +16,10 @@ You can now use "auto" on amount to automatically set the amount to the Balance 
 - Orca
 - Jupiter (Private Self Hosted API)
 
+## Example Projects
+Volume Bot: [https://github.com/YZYLAB/solana-volume-bot](https://github.com/YZYLAB/solana-volume-bot)
+More coming soon
+
 ## Installation
 
 Install Solana Swap with NPM
