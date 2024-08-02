@@ -18,6 +18,7 @@ You can now use "auto" on amount to automatically set the amount to the Balance 
 
 ## Example Projects
 Volume Bot: [https://github.com/YZYLAB/solana-volume-bot](https://github.com/YZYLAB/solana-volume-bot)
+Trading Bot: [https://github.com/YZYLAB/solana-trade-bot](https://github.com/YZYLAB/solana-trade-bot)
 More coming soon
 
 ## Installation
