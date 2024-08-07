@@ -15,10 +15,12 @@ export class SolanaTracker {
   private baseUrl = "https://swap-v2.solanatracker.io";
   private readonly connection: Connection;
   private readonly keypair: Keypair;
+  private readonly apiKey: string;
 
-  constructor(keypair: Keypair, rpc: string) {
+  constructor(keypair: Keypair, rpc: string, apiKey?: string) {
     this.connection = new Connection(rpc);
     this.keypair = keypair;
+    this.apiKey = apiKey || "";
   }
 
   async setBaseUrl(url: string) {
@@ -68,7 +70,11 @@ export class SolanaTracker {
     }
     const url = `${this.baseUrl}/swap?${params}`;
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: {
+          "x-api-key": this.apiKey,
+        },
+      });
       return response.data as SwapResponse;
     } catch (error) {
       throw error;

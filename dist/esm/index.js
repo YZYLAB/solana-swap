@@ -13,10 +13,11 @@ import { Connection, Transaction, VersionedTransaction, } from "@solana/web3.js"
 import { transactionSenderAndConfirmationWaiter } from "./lib/sender.js";
 import { sendBundle, createTipTransaction, checkBundleStatus } from "./lib/jito.js";
 export class SolanaTracker {
-    constructor(keypair, rpc) {
+    constructor(keypair, rpc, apiKey) {
         this.baseUrl = "https://swap-v2.solanatracker.io";
         this.connection = new Connection(rpc);
         this.keypair = keypair;
+        this.apiKey = apiKey || "";
     }
     setBaseUrl(url) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -56,7 +57,11 @@ export class SolanaTracker {
             }
             const url = `${this.baseUrl}/swap?${params}`;
             try {
-                const response = yield axios.get(url);
+                const response = yield axios.get(url, {
+                    headers: {
+                        "x-api-key": this.apiKey,
+                    },
+                });
                 return response.data;
             }
             catch (error) {

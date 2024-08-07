@@ -28,10 +28,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     const sender_1 = require("./lib/sender");
     const jito_1 = require("./lib/jito");
     class SolanaTracker {
-        constructor(keypair, rpc) {
+        constructor(keypair, rpc, apiKey) {
             this.baseUrl = "https://swap-v2.solanatracker.io";
             this.connection = new web3_js_1.Connection(rpc);
             this.keypair = keypair;
+            this.apiKey = apiKey || "";
         }
         setBaseUrl(url) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -71,7 +72,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                 }
                 const url = `${this.baseUrl}/swap?${params}`;
                 try {
-                    const response = yield axios_1.default.get(url);
+                    const response = yield axios_1.default.get(url, {
+                        headers: {
+                            "x-api-key": this.apiKey,
+                        },
+                    });
                     return response.data;
                 }
                 catch (error) {

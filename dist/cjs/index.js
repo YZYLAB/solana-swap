@@ -16,13 +16,14 @@ exports.SolanaTracker = void 0;
 const axios_1 = __importDefault(require("axios"));
 const bs58_1 = __importDefault(require("bs58"));
 const web3_js_1 = require("@solana/web3.js");
-const sender_1 = require("./lib/sender");
-const jito_1 = require("./lib/jito");
+const sender_1 = require("./lib/sender.js");
+const jito_1 = require("./lib/jito.js");
 class SolanaTracker {
-    constructor(keypair, rpc) {
+    constructor(keypair, rpc, apiKey) {
         this.baseUrl = "https://swap-v2.solanatracker.io";
         this.connection = new web3_js_1.Connection(rpc);
         this.keypair = keypair;
+        this.apiKey = apiKey || "";
     }
     setBaseUrl(url) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -62,7 +63,11 @@ class SolanaTracker {
             }
             const url = `${this.baseUrl}/swap?${params}`;
             try {
-                const response = yield axios_1.default.get(url);
+                const response = yield axios_1.default.get(url, {
+                    headers: {
+                        "x-api-key": this.apiKey,
+                    },
+                });
                 return response.data;
             }
             catch (error) {
