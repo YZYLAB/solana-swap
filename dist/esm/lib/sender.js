@@ -41,7 +41,7 @@ const DEFAULT_OPTIONS = {
 function transactionSenderAndConfirmationWaiter(_a) {
     return __awaiter(this, arguments, void 0, function* ({ connection, serializedTransaction, blockhashWithExpiryBlockHeight, options = DEFAULT_OPTIONS, }) {
         const { sendOptions, confirmationRetries, confirmationRetryTimeout, lastValidBlockHeightBuffer, confirmationCheckInterval, skipConfirmationCheck, commitment } = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
-        const lastValidBlockHeight = blockhashWithExpiryBlockHeight.lastValidBlockHeight -
+        const lastValidBlockHeight = blockhashWithExpiryBlockHeight.lastValidBlockHeight +
             (lastValidBlockHeightBuffer || 150);
         // Send the transaction once
         let signature;

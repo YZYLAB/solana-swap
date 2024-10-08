@@ -85,7 +85,7 @@ async function transactionSenderAndConfirmationWaiter({
   } = { ...DEFAULT_OPTIONS, ...options };
 
   const lastValidBlockHeight =
-    blockhashWithExpiryBlockHeight.lastValidBlockHeight -
+    blockhashWithExpiryBlockHeight.lastValidBlockHeight +
     (lastValidBlockHeightBuffer || 150);
 
   // Send the transaction once

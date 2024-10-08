@@ -5,12 +5,12 @@ import { SolanaTracker } from "../";
 async function swap() {
   const keypair = Keypair.fromSecretKey(
     bs58.decode(
-      "YOUR_SECRET_KEY_HERE"
+      "YOUR_SECRET_KEY"
     )
   );
   const solanaTracker = new SolanaTracker(
     keypair,
-    "https://rpc.solanatracker.io/public?advancedTx=true"
+    "https://rpc-mainnet.solanatracker.io/?api_key=YOUR_API_KEY" // Staked RPC: https://www.solanatracker.io/solana-rpc
   );
 
   const swapResponse = await solanaTracker.getSwapInstructions(
@@ -42,6 +42,7 @@ async function swap() {
     console.error("Error performing swap:", message, signature);
   }
 
+  
   // Jito transaction
   try {
     const txid = await solanaTracker.performSwap(swapResponse, {

@@ -12,8 +12,9 @@ import bs58 from "bs58";
 import { SolanaTracker } from "../index.js";
 function swap() {
     return __awaiter(this, void 0, void 0, function* () {
-        const keypair = Keypair.fromSecretKey(bs58.decode("YOUR_SECRET_KEY_HERE"));
-        const solanaTracker = new SolanaTracker(keypair, "https://rpc.solanatracker.io/public?advancedTx=true");
+        const keypair = Keypair.fromSecretKey(bs58.decode("YOUR_SECRET_KEY"));
+        const solanaTracker = new SolanaTracker(keypair, "https://rpc-mainnet.solanatracker.io/?api_key=YOUR_API_KEY" // Staked RPC: https://www.solanatracker.io/solana-rpc
+        );
         const swapResponse = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", // From Token
         "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // To Token
         0.0001, // Amount to swap

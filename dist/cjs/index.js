@@ -16,8 +16,8 @@ exports.SolanaTracker = void 0;
 const axios_1 = __importDefault(require("axios"));
 const bs58_1 = __importDefault(require("bs58"));
 const web3_js_1 = require("@solana/web3.js");
-const sender_1 = require("./lib/sender.js");
-const jito_1 = require("./lib/jito.js");
+const sender_1 = require("./lib/sender");
+const jito_1 = require("./lib/jito");
 class SolanaTracker {
     constructor(keypair, rpc, apiKey) {
         this.baseUrl = "https://swap-v2.solanatracker.io";
