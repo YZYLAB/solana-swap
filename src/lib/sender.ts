@@ -60,7 +60,7 @@ const DEFAULT_OPTIONS: TransactionSenderAndConfirmationWaiterOptions = {
   jito: {
     enabled: false,
     tip: 0,
-}
+  }
 };
 
 async function transactionSenderAndConfirmationWaiter({
@@ -79,6 +79,7 @@ async function transactionSenderAndConfirmationWaiter({
     confirmationRetries,
     confirmationRetryTimeout,
     lastValidBlockHeightBuffer,
+    resendInterval,
     confirmationCheckInterval,
     skipConfirmationCheck,
     commitment
@@ -88,7 +89,7 @@ async function transactionSenderAndConfirmationWaiter({
     blockhashWithExpiryBlockHeight.lastValidBlockHeight +
     (lastValidBlockHeightBuffer || 150);
 
-  // Send the transaction once
+  // Send the transaction initially
   let signature: TransactionSignature;
   try {
     signature = await connection.sendRawTransaction(
@@ -103,23 +104,47 @@ async function transactionSenderAndConfirmationWaiter({
     return signature;
   }
 
+  // Set up transaction resend interval
+  const resendIntervalId = resendInterval ? setInterval(async () => {
+    try {
+      await connection.sendRawTransaction(
+        serializedTransaction,
+        sendOptions
+      );
+    } catch (error) {}
+  }, resendInterval < 1000 ? 1000 : resendInterval) : null;
+
   // Loop for confirmation check
   let retryCount = 0;
   while (retryCount <= (confirmationRetries || 30)) {
     try {
       const status = await connection.getSignatureStatus(signature);
 
-      if (status.value && status.value.confirmationStatus && 
-          COMMITMENT_LEVELS[status.value.confirmationStatus] >= COMMITMENT_LEVELS[commitment as SupportedCommitment]) {
+      if (status.value && status.value.confirmationStatus) {
+        if (resendIntervalId) {
+          clearInterval(resendIntervalId);
+        }
+      }
+      if (status.value && status.value.confirmationStatus &&
+        COMMITMENT_LEVELS[status.value.confirmationStatus] >= COMMITMENT_LEVELS[commitment as SupportedCommitment]) {
+        if (resendIntervalId) {
+          clearInterval(resendIntervalId);
+        }
         return signature;
       }
 
       if (status.value && status.value.err) {
+        if (resendIntervalId) {
+          clearInterval(resendIntervalId);
+        }
         throw new TransactionError(`Transaction failed: ${status.value.err}`, signature);
       }
 
       const blockHeight = await connection.getBlockHeight();
       if (blockHeight > lastValidBlockHeight) {
+        if (resendIntervalId) {
+          clearInterval(resendIntervalId);
+        }
         throw new TransactionError("Transaction expired", signature);
       }
 
@@ -129,6 +154,9 @@ async function transactionSenderAndConfirmationWaiter({
 
       retryCount++;
     } catch (error: any) {
+      if (resendIntervalId) {
+        clearInterval(resendIntervalId);
+      }
       if (error instanceof TransactionError) {
         throw error;
       }
@@ -136,6 +164,9 @@ async function transactionSenderAndConfirmationWaiter({
     }
   }
 
+  if (resendIntervalId) {
+    clearInterval(resendIntervalId);
+  }
   throw new TransactionError("Transaction failed after maximum retries", signature);
 }
 

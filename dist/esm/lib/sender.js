@@ -40,10 +40,10 @@ const DEFAULT_OPTIONS = {
 };
 function transactionSenderAndConfirmationWaiter(_a) {
     return __awaiter(this, arguments, void 0, function* ({ connection, serializedTransaction, blockhashWithExpiryBlockHeight, options = DEFAULT_OPTIONS, }) {
-        const { sendOptions, confirmationRetries, confirmationRetryTimeout, lastValidBlockHeightBuffer, confirmationCheckInterval, skipConfirmationCheck, commitment } = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
+        const { sendOptions, confirmationRetries, confirmationRetryTimeout, lastValidBlockHeightBuffer, resendInterval, confirmationCheckInterval, skipConfirmationCheck, commitment } = Object.assign(Object.assign({}, DEFAULT_OPTIONS), options);
         const lastValidBlockHeight = blockhashWithExpiryBlockHeight.lastValidBlockHeight +
             (lastValidBlockHeightBuffer || 150);
-        // Send the transaction once
+        // Send the transaction initially
         let signature;
         try {
             signature = yield connection.sendRawTransaction(serializedTransaction, sendOptions);
@@ -54,31 +54,58 @@ function transactionSenderAndConfirmationWaiter(_a) {
         if (skipConfirmationCheck) {
             return signature;
         }
+        // Set up transaction resend interval
+        const resendIntervalId = resendInterval ? setInterval(() => __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield connection.sendRawTransaction(serializedTransaction, sendOptions);
+            }
+            catch (error) { }
+        }), resendInterval < 1000 ? 1000 : resendInterval) : null;
         // Loop for confirmation check
         let retryCount = 0;
         while (retryCount <= (confirmationRetries || 30)) {
             try {
                 const status = yield connection.getSignatureStatus(signature);
+                if (status.value && status.value.confirmationStatus) {
+                    if (resendIntervalId) {
+                        clearInterval(resendIntervalId);
+                    }
+                }
                 if (status.value && status.value.confirmationStatus &&
                     COMMITMENT_LEVELS[status.value.confirmationStatus] >= COMMITMENT_LEVELS[commitment]) {
+                    if (resendIntervalId) {
+                        clearInterval(resendIntervalId);
+                    }
                     return signature;
                 }
                 if (status.value && status.value.err) {
+                    if (resendIntervalId) {
+                        clearInterval(resendIntervalId);
+                    }
                     throw new TransactionError(`Transaction failed: ${status.value.err}`, signature);
                 }
                 const blockHeight = yield connection.getBlockHeight();
                 if (blockHeight > lastValidBlockHeight) {
+                    if (resendIntervalId) {
+                        clearInterval(resendIntervalId);
+                    }
                     throw new TransactionError("Transaction expired", signature);
                 }
                 yield new Promise((resolve) => setTimeout(resolve, confirmationCheckInterval));
                 retryCount++;
             }
             catch (error) {
+                if (resendIntervalId) {
+                    clearInterval(resendIntervalId);
+                }
                 if (error instanceof TransactionError) {
                     throw error;
                 }
                 throw new TransactionError(`Confirmation check failed: ${error.message}`, signature);
             }
+        }
+        if (resendIntervalId) {
+            clearInterval(resendIntervalId);
         }
         throw new TransactionError("Transaction failed after maximum retries", signature);
     });
