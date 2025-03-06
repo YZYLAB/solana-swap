@@ -166,7 +166,7 @@ Our standard fee is 0.5% on successful transactions. For high-volume application
 
 For business inquiries or volume discounts:
 - Email: [swap-api@solanatracker.io](mailto:swap-api@solanatracker.io)
-- Discord: [Join our community](https://discord.gg/solanatracker)
+- Discord: [Join our community](https://discord.gg/JH2e9rR9fc)
 
 ## Documentation
 
