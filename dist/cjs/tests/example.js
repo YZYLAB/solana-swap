@@ -20,12 +20,35 @@ function swap() {
         const keypair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode("YOUR_SECRET_KEY"));
         const solanaTracker = new __1.SolanaTracker(keypair, "https://rpc-mainnet.solanatracker.io/?api_key=YOUR_API_KEY" // Staked RPC: https://www.solanatracker.io/solana-rpc
         );
-        const swapResponse = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", // From Token
-        "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // To Token
+        // Example 1: Basic swap (backward compatible)
+        const swapResponse = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", // From Token (SOL)
+        "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", // To Token (RAY)
         0.0001, // Amount to swap
         30, // Slippage
         keypair.publicKey.toBase58(), // Payer public key
         0.0005);
+        // Example 2: Swap with auto priority fee
+        const swapResponseAuto = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", 0.0001, 30, keypair.publicKey.toBase58(), "auto", // Auto priority fee
+        false, // forceLegacy
+        { priorityFeeLevel: "medium" } // Priority level for auto fee
+        );
+        // Example 3: Swap 50% of wallet balance with custom fee
+        const swapResponsePercent = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", "50%", // Swap 50% of wallet balance
+        30, keypair.publicKey.toBase58(), 0.0005, false, {
+            fee: {
+                wallet: "YOUR_FEE_WALLET_ADDRESS",
+                percentage: 0.25 // 0.25% custom fee
+            },
+            feeType: "add", // Add fee on top
+            onlyDirectRoutes: false // Allow multi-hop swaps
+        });
+        // Example 4: Swap entire wallet balance with v0 transaction
+        const swapResponseAll = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", "auto", // Use entire wallet balance
+        30, keypair.publicKey.toBase58(), "auto", false, {
+            priorityFeeLevel: "high", // High priority
+            txVersion: "v0", // Use versioned transaction, this is the default.
+            onlyDirectRoutes: true // Only direct routes
+        });
         // Regular transaction
         try {
             const txid = yield solanaTracker.performSwap(swapResponse, {

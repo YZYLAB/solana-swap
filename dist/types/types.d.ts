@@ -23,4 +23,5 @@ export interface SwapResponse {
     txVersion: string;
     rate: RateResponse;
     forceLegacy?: boolean;
+    type: 'v0' | 'legacy';
 }

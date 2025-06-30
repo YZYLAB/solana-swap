@@ -11,6 +11,24 @@ import { transactionSenderAndConfirmationWaiter, TransactionSenderAndConfirmatio
 import { RateResponse, SwapResponse } from "./types";
 import { sendBundle, createTipTransaction, checkBundleStatus } from "./lib/jito";
 
+export type PriorityFeeLevel = "min" | "low" | "medium" | "high" | "veryHigh" | "unsafeMax";
+export type FeeType = "add" | "deduct";
+export type TxVersion = "v0" | "legacy";
+
+export interface FeeConfig {
+  wallet: string;
+  percentage: number;
+}
+
+export interface SwapOptions {
+  priorityFee?: number | "auto";
+  priorityFeeLevel?: PriorityFeeLevel;
+  txVersion?: TxVersion;
+  fee?: FeeConfig;
+  feeType?: FeeType;
+  onlyDirectRoutes?: boolean;
+}
+
 export class SolanaTracker {
   private baseUrl = "https://swap-v2.solanatracker.io";
   private readonly connection: Connection;
@@ -30,7 +48,7 @@ export class SolanaTracker {
   async getRate(
     from: string,
     to: string,
-    amount: number,
+    amount: number | string | "auto",
     slippage: number
   ): Promise<RateResponse> {
     const params = new URLSearchParams({
@@ -54,21 +72,54 @@ export class SolanaTracker {
     fromAmount: number | string,
     slippage: number,
     payer: string,
-    priorityFee?: number,
-    forceLegacy?: boolean
+    priorityFee?: number | "auto",
+    forceLegacy?: boolean,
+    additionalOptions?: SwapOptions
   ): Promise<SwapResponse> {
-    const params = new URLSearchParams({
+    const queryParams = new URLSearchParams({
       from,
       to,
       fromAmount: fromAmount.toString(),
       slippage: slippage.toString(),
       payer,
-      forceLegacy: forceLegacy ? "true" : "false",
     });
-    if (priorityFee) {
-      params.append("priorityFee", priorityFee.toString());
+
+    // Handle legacy parameters
+    if (priorityFee !== undefined) {
+      queryParams.append("priorityFee", priorityFee.toString());
     }
-    const url = `${this.baseUrl}/swap?${params}`;
+
+    if (forceLegacy) {
+      queryParams.append("txVersion", "legacy");
+    }
+
+    // Add new optional parameters if provided
+    if (additionalOptions) {
+      if (additionalOptions.priorityFeeLevel) {
+        queryParams.append("priorityFeeLevel", additionalOptions.priorityFeeLevel);
+      }
+
+      if (additionalOptions.txVersion) {
+        queryParams.append("txVersion", additionalOptions.txVersion);
+      }
+
+      if (additionalOptions.feeType) {
+        queryParams.append("feeType", additionalOptions.feeType);
+      }
+
+      if (additionalOptions.onlyDirectRoutes !== undefined) {
+        queryParams.append("onlyDirectRoutes", additionalOptions.onlyDirectRoutes.toString());
+      }
+
+      if (!additionalOptions.txVersion && !forceLegacy) {
+        queryParams.append("txVersion", 'v0');
+      }
+
+    }
+
+    const url = `${this.baseUrl}/swap?${queryParams}`;
+
+    console.log("Swap URL:", url);
     try {
       const response = await axios.get(url, {
         headers: {
@@ -119,7 +170,8 @@ export class SolanaTracker {
       lastValidBlockHeight: blockhash.lastValidBlockHeight,
     };
 
-    if (swapResponse.txVersion === 'v0') {
+
+    if (swapResponse.type === 'v0') {
       txn = VersionedTransaction.deserialize(serializedTransactionBuffer);
       txn.sign([this.keypair]);
     } else {

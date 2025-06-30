@@ -48,20 +48,42 @@ class SolanaTracker {
             }
         });
     }
-    getSwapInstructions(from, to, fromAmount, slippage, payer, priorityFee, forceLegacy) {
+    getSwapInstructions(from, to, fromAmount, slippage, payer, priorityFee, forceLegacy, additionalOptions) {
         return __awaiter(this, void 0, void 0, function* () {
-            const params = new URLSearchParams({
+            const queryParams = new URLSearchParams({
                 from,
                 to,
                 fromAmount: fromAmount.toString(),
                 slippage: slippage.toString(),
                 payer,
-                forceLegacy: forceLegacy ? "true" : "false",
             });
-            if (priorityFee) {
-                params.append("priorityFee", priorityFee.toString());
+            // Handle legacy parameters
+            if (priorityFee !== undefined) {
+                queryParams.append("priorityFee", priorityFee.toString());
             }
-            const url = `${this.baseUrl}/swap?${params}`;
+            if (forceLegacy) {
+                queryParams.append("txVersion", "legacy");
+            }
+            // Add new optional parameters if provided
+            if (additionalOptions) {
+                if (additionalOptions.priorityFeeLevel) {
+                    queryParams.append("priorityFeeLevel", additionalOptions.priorityFeeLevel);
+                }
+                if (additionalOptions.txVersion) {
+                    queryParams.append("txVersion", additionalOptions.txVersion);
+                }
+                if (additionalOptions.feeType) {
+                    queryParams.append("feeType", additionalOptions.feeType);
+                }
+                if (additionalOptions.onlyDirectRoutes !== undefined) {
+                    queryParams.append("onlyDirectRoutes", additionalOptions.onlyDirectRoutes.toString());
+                }
+                if (!additionalOptions.txVersion && !forceLegacy) {
+                    queryParams.append("txVersion", 'v0');
+                }
+            }
+            const url = `${this.baseUrl}/swap?${queryParams}`;
+            console.log("Swap URL:", url);
             try {
                 const response = yield axios_1.default.get(url, {
                     headers: {
@@ -110,7 +132,7 @@ class SolanaTracker {
                 blockhash: blockhash.blockhash,
                 lastValidBlockHeight: blockhash.lastValidBlockHeight,
             };
-            if (swapResponse.txVersion === 'v0') {
+            if (swapResponse.type === 'v0') {
                 txn = web3_js_1.VersionedTransaction.deserialize(serializedTransactionBuffer);
                 txn.sign([this.keypair]);
             }

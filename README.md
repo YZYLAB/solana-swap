@@ -17,6 +17,9 @@ Solana Swap provides a streamlined API for executing token swaps on the Solana b
 - **High Performance**: Optimized for speed and reliability, even during network congestion
 - **Developer-Friendly**: Simple interface with comprehensive documentation
 - **Jito Integration**: Support for Jito bundles for MEV protection
+- **Auto Priority Fees**: Automatic priority fee calculation
+- **Custom Fee Support**: Add your own fees on swaps
+- **Percentage-based Swaps**: Swap percentages of wallet balance
 
 ## Supported DEXs
 
@@ -101,14 +104,13 @@ async function swap() {
 swap();
 ```
 
-## New Features
+## Advanced Features
 
-### Auto Amount (July 12 Update)
+### Auto Amount
 
-You can now use `"auto"` as the amount parameter to automatically use the entire balance of the specified token:
+Use `"auto"` to swap the entire balance of a token:
 
 ```javascript
-// Will use the entire balance of the "from" token in the wallet
 const swapResponse = await solanaTracker.getSwapInstructions(
   fromToken,
   toToken,
@@ -119,7 +121,100 @@ const swapResponse = await solanaTracker.getSwapInstructions(
 );
 ```
 
-**Note:** The auto amount feature works only with Swap endpoints, not Rate endpoints.
+### Percentage-based Swaps
+
+Swap a percentage of your wallet balance:
+
+```javascript
+const swapResponse = await solanaTracker.getSwapInstructions(
+  fromToken,
+  toToken,
+  "50%",  // Swap 50% of balance
+  slippage,
+  payerPublicKey,
+  priorityFee
+);
+```
+
+### Auto Priority Fees
+
+Let the API automatically determine the optimal priority fee:
+
+```javascript
+const swapResponse = await solanaTracker.getSwapInstructions(
+  fromToken,
+  toToken,
+  amount,
+  slippage,
+  payerPublicKey,
+  "auto",  // Auto priority fee
+  false,   // forceLegacy
+  {
+    priorityFeeLevel: "medium"  // Options: "min", "low", "medium", "high", "veryHigh", "unsafeMax"
+  }
+);
+```
+
+### Custom Fees
+
+Add your own fees to swaps:
+
+```javascript
+const swapResponse = await solanaTracker.getSwapInstructions(
+  fromToken,
+  toToken,
+  amount,
+  slippage,
+  payerPublicKey,
+  priorityFee,
+  false,
+  {
+    fee: {
+      wallet: "YOUR_FEE_WALLET_ADDRESS",
+      percentage: 0.25  // 0.25% fee
+    },
+    feeType: "add"  // "add" or "deduct"
+  }
+);
+```
+
+### Transaction Versions
+
+Choose between versioned transactions (v0) or legacy transactions:
+
+```javascript
+const swapResponse = await solanaTracker.getSwapInstructions(
+  fromToken,
+  toToken,
+  amount,
+  slippage,
+  payerPublicKey,
+  priorityFee,
+  false,
+  {
+    txVersion: "v0"  // or "legacy"
+  }
+);
+```
+
+### Direct Routes Only
+
+Disable multi-hop swaps for direct pool routes only:
+
+```javascript
+const swapResponse = await solanaTracker.getSwapInstructions(
+  fromToken,
+  toToken,
+  amount,
+  slippage,
+  payerPublicKey,
+  priorityFee,
+  false,
+  {
+    onlyDirectRoutes: true
+  }
+);
+```
 
 ### Jito Integration
 
@@ -138,15 +233,59 @@ const txid = await solanaTracker.performSwap(swapResponse, {
 });
 ```
 
+## Full Example with All Features
+
+```javascript
+// Swap 50% of wallet balance with auto priority fee and custom fee
+const swapResponse = await solanaTracker.getSwapInstructions(
+  "So11111111111111111111111111111111111111112",
+  "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
+  "50%",
+  30,
+  keypair.publicKey.toBase58(),
+  "auto",
+  false,
+  {
+    priorityFeeLevel: "high",
+    fee: {
+      wallet: "YOUR_FEE_WALLET_ADDRESS",
+      percentage: 0.5
+    },
+    feeType: "add",
+    txVersion: "v0",
+    onlyDirectRoutes: false
+  }
+);
+```
+
+## API Reference
+
+### getSwapInstructions
+
+```typescript
+getSwapInstructions(
+  from: string,                           // From token address
+  to: string,                             // To token address
+  fromAmount: number | string,            // Amount ("auto", "50%", or number)
+  slippage: number,                       // Slippage percentage
+  payer: string,                          // Payer public key
+  priorityFee?: number | "auto",          // Priority fee
+  forceLegacy?: boolean,                  // Force legacy transaction
+  additionalOptions?: {                   // Additional options
+    priorityFeeLevel?: "min" | "low" | "medium" | "high" | "veryHigh" | "unsafeMax",
+    fee?: { wallet: string; percentage: number },
+    feeType?: "add" | "deduct",
+    txVersion?: "v0" | "legacy",
+    onlyDirectRoutes?: boolean
+  }
+): Promise<SwapResponse>
+```
+
 ## Example Projects
 
 - [Volume Bot](https://github.com/YZYLAB/solana-volume-bot)
 - [Trading Bot](https://github.com/YZYLAB/solana-trade-bot)
 
-## Production Usage
-
-Solana Swap is currently being used in production at:
-- [Solana Tracker](https://www.solanatracker.io)
 
 *Using this library in production? [Let us know](mailto:swap-api@solanatracker.io) to be featured here.*
 
