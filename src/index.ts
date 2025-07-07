@@ -111,6 +111,10 @@ export class SolanaTracker {
         queryParams.append("onlyDirectRoutes", additionalOptions.onlyDirectRoutes.toString());
       }
 
+      if (additionalOptions.fee) {
+        queryParams.append("fee", `${additionalOptions.fee.wallet}:${additionalOptions.fee.percentage}`);
+      }
+
       if (!additionalOptions.txVersion && !forceLegacy) {
         queryParams.append("txVersion", 'v0');
       }
