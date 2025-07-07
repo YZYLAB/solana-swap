@@ -16,8 +16,8 @@ exports.SolanaTracker = void 0;
 const axios_1 = __importDefault(require("axios"));
 const bs58_1 = __importDefault(require("bs58"));
 const web3_js_1 = require("@solana/web3.js");
-const sender_1 = require("./lib/sender");
-const jito_1 = require("./lib/jito");
+const sender_1 = require("./lib/sender.js");
+const jito_1 = require("./lib/jito.js");
 class SolanaTracker {
     constructor(keypair, rpc, apiKey) {
         this.baseUrl = "https://swap-v2.solanatracker.io";
@@ -77,6 +77,9 @@ class SolanaTracker {
                 }
                 if (additionalOptions.onlyDirectRoutes !== undefined) {
                     queryParams.append("onlyDirectRoutes", additionalOptions.onlyDirectRoutes.toString());
+                }
+                if (additionalOptions.fee) {
+                    queryParams.append("fee", `${additionalOptions.fee.wallet}:${additionalOptions.fee.percentage}`);
                 }
                 if (!additionalOptions.txVersion && !forceLegacy) {
                     queryParams.append("txVersion", 'v0');
