@@ -23,11 +23,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     Object.defineProperty(exports, "__esModule", { value: true });
     const web3_js_1 = require("@solana/web3.js");
     const bs58_1 = __importDefault(require("bs58"));
-    const __1 = require("../index.js");
+    const __1 = require("../");
     function swap() {
         return __awaiter(this, void 0, void 0, function* () {
             const keypair = web3_js_1.Keypair.fromSecretKey(bs58_1.default.decode("YOUR_SECRET_KEY"));
-            const solanaTracker = new __1.SolanaTracker(keypair, "https://rpc-mainnet.solanatracker.io/?api_key=YOUR_API_KEY" // Staked RPC: https://www.solanatracker.io/solana-rpc
+            const solanaTracker = new __1.SolanaTracker(keypair, "https://rpc-mainnet.solanatracker.io/?api_key=YOUR_API_KEY", // Staked RPC: https://www.solanatracker.io/solana-rpc
+            "YOUR_API_KEY", // Optional: API key for swap instructions
+            false // Optional: Enable debug mode
             );
             // Example 1: Basic swap (backward compatible)
             const swapResponse = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", // From Token (SOL)
@@ -70,13 +72,46 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                     commitment: "processed",
                     skipConfirmationCheck: false // Set to true if you want to skip confirmation checks and return txid immediately
                 });
-                // Returns txid when the swap is successful or throws an error if the swap fails
                 console.log("Transaction ID:", txid);
                 console.log("Transaction URL:", `https://solscan.io/tx/${txid}`);
             }
             catch (error) {
-                const { signature, message } = error;
-                console.error("Error performing swap:", message, signature);
+                console.error("Error performing swap:", error.message);
+            }
+            // Transaction with WebSocket confirmation (more efficient)
+            try {
+                const txid = yield solanaTracker.performSwap(swapResponse, {
+                    sendOptions: { skipPreflight: true },
+                    confirmationRetries: 30,
+                    confirmationRetryTimeout: 500,
+                    commitment: "processed",
+                    useWebSocket: true // Use WebSocket for confirmation
+                });
+                console.log("Transaction ID:", txid);
+                console.log("Transaction URL:", `https://solscan.io/tx/${txid}`);
+            }
+            catch (error) {
+                console.error("Error performing swap:", error.message);
+            }
+            // Transaction with detailed error information
+            const result = yield solanaTracker.performSwapWithDetails(swapResponse, {
+                sendOptions: { skipPreflight: true },
+                confirmationRetries: 30,
+                confirmationRetryTimeout: 500,
+                commitment: "processed",
+                useWebSocket: true
+            });
+            if (result.error) {
+                console.error("Transaction failed:", result.signature);
+                console.error("Error type:", result.error.type);
+                console.error("Error message:", result.error.message);
+                if (result.error.programId) {
+                    console.error("Program that failed:", result.error.programId);
+                }
+            }
+            else {
+                console.log("Transaction successful:", result.signature);
+                console.log("Transaction URL:", `https://solscan.io/tx/${result.signature}`);
             }
             // Jito transaction
             try {
@@ -90,14 +125,65 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
                         tip: 0.0001,
                     },
                 });
-                // Returns txid when the swap is successful or throws an error if the swap fails
                 console.log("Transaction ID:", txid);
                 console.log("Transaction URL:", `https://solscan.io/tx/${txid}`);
             }
             catch (error) {
-                const { signature, message } = error;
-                console.error("Error performing swap:", message, signature);
+                console.error("Error performing swap:", error.message);
             }
+            // Nextblock example with custom send endpoint
+            yield solanaTracker.setCustomSendTransactionEndpoint("https://london.nextblock.io", {
+                'Authorization': 'API_KEY'
+            });
+            const swapResponseNextblock = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", 1, 'auto', keypair.publicKey.toBase58(), 0, false, {
+                customTip: {
+                    wallet: "nEXTBLockYgngeRmRrjDV31mGSekVPqZoMGhQEZtPVG",
+                    amount: 0.001 // 0.001 SOL tip
+                },
+                txVersion: "v0",
+            });
+            try {
+                const txid = yield solanaTracker.performSwap(swapResponseNextblock, {
+                    sendOptions: { skipPreflight: true, maxRetries: 0 },
+                    confirmationRetries: 30,
+                    confirmationRetryTimeout: 500,
+                    commitment: "processed",
+                });
+                console.log("Nextblock Transaction ID:", txid);
+            }
+            catch (error) {
+                console.error("Error with Nextblock:", error.message);
+            }
+            // Helius sender example
+            yield solanaTracker.setCustomSendTransactionEndpoint("https://ams-sender.helius-rpc.com/fast");
+            const swapResponseHelius = yield solanaTracker.getSwapInstructions("So11111111111111111111111111111111111111112", "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", 0.0001, 'auto', keypair.publicKey.toBase58(), 0, false, {
+                customTip: {
+                    wallet: "4ACfpUFoaSD9bfPdeu6DBt89gB6ENTeHBXCAi87NhDEE",
+                    amount: 0.005 // 0.005 SOL tip
+                },
+                txVersion: "v0",
+            });
+            try {
+                const txid = yield solanaTracker.performSwap(swapResponseHelius, {
+                    sendOptions: { skipPreflight: true, maxRetries: 0 },
+                    confirmationRetries: 30,
+                    useWebSocket: false,
+                    confirmationRetryTimeout: 500,
+                    lastValidBlockHeightBuffer: 150,
+                    resendInterval: 1000,
+                    confirmationCheckInterval: 200,
+                    commitment: "processed",
+                    skipConfirmationCheck: false
+                });
+                console.log("Helius Transaction ID:", txid);
+            }
+            catch (error) {
+                console.error("Error with Helius:", error.message);
+            }
+            // Clear custom send endpoint to go back to regular RPC
+            yield solanaTracker.setCustomSendTransactionEndpoint(null);
+            // Clean up resources when done
+            solanaTracker.destroy();
         });
     }
     swap();

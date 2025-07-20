@@ -32,7 +32,12 @@ Solana Swap provides a streamlined API for executing token swaps on the Solana b
 - Raydium
 - Raydium CPMM
 - Pump.fun
-- Pump.fun CLMM
+- Pump.fun AMM
+- Raydium Launchoad
+- MoonIt
+- Letsbonk.fun
+- Jupiter Studio
+- Believe
 - Meteora Dynamic
 - Moonshot
 - Orca 
@@ -73,7 +78,7 @@ async function swap() {
   // Create instance with RPC endpoint
   const solanaTracker = new SolanaTracker(
     keypair,
-    "https://rpc.solanatracker.io/public?advancedTx=true",
+    "https://rpc-mainnet.solanatracker.io/?api_key=YOUR_API_KEY",
     "YOUR_API_KEY", // Optional: API key for swap instructions (Only available upon request for reduced fee, not required)
     false           // Optional: Enable debug mode
   );
