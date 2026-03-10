@@ -1,3 +1,17 @@
+## ⚠️ This package is deprecated (It will keep working in its current state).
+
+**solana-swap** has been replaced by [Raptor Dex Aggregator](https://docs.solanatracker.io/raptor/overview) — a faster, more powerful swap engine from Solana Tracker.
+
+### Why switch?
+- Better routing and pricing across all major Solana DEXs
+- Improved performance and reliability
+- Actively maintained and supported
+
+### Get started
+📖 **Documentation:** https://docs.solanatracker.io/raptor/overview
+
+This repository is no longer maintained and will not receive updates. Please migrate to Raptor for continued support.
+
 
 # Solana Swap
 
